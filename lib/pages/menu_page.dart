@@ -53,30 +53,31 @@ class MenuPage extends StatelessWidget {
           ),
 
           Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.8,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              itemCount: 6,
-              itemBuilder: (context, index) {
-                return _buildFoodItem(
-                  index < 3 
-                    ? 'Burger King Medium'
-                    : 'Teh Botol',
-                  index < 3 
-                    ? 'Rp. 50.000,00'
-                    : 'Rp. 4.000,00',
-                  index < 3 
-                    ? 'assets/images/Burger.jpeg'
-                    : 'assets/images/teh-botol.jpeg',
-                );
-              },
-            ),
-          ),
+  child: GridView.builder(
+    padding: const EdgeInsets.all(16),
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 2,
+      childAspectRatio: 0.8,
+      crossAxisSpacing: 16,
+      mainAxisSpacing: 16,
+    ),
+    itemCount: 8,
+    itemBuilder: (context, index) {
+      return _buildFoodItem(
+        context,
+        index < 3 
+          ? 'Burger King Medium'
+          : 'Teh Botol',
+        index < 3 
+          ? 'Rp. 50.000,00'
+          : 'Rp. 4.000,00',
+        index < 3 
+          ? 'assets/images/Burger.jpeg'
+          : 'assets/images/teh-botol.jpeg',
+      );
+    },
+  ),
+),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -129,7 +130,7 @@ BottomNavigationBarItem(
     onTap: () {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => AddDataPage()), 
+        MaterialPageRoute(builder: (context) => const AddDataPage()), 
       );
     },
     child: const Stack(
@@ -207,59 +208,79 @@ BottomNavigationBarItem(
     );
   }
 
-  Widget _buildFoodItem(String name, String price, String imageUrl) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 3,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                image: DecorationImage(
-                  image: AssetImage(imageUrl),
-                  fit: BoxFit.cover,
-                ),
+Widget _buildFoodItem(BuildContext context, String name, String price, String imageUrl) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.1),
+          spreadRadius: 1,
+          blurRadius: 5,
+        ),
+      ],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 3,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              image: DecorationImage(
+                image: AssetImage(imageUrl),
+                fit: BoxFit.cover,
               ),
             ),
           ),
-          Expanded(
-            flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
+        ),
+        Expanded(
+          flex: 2,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        price,
-                        style: const TextStyle(
-                          fontSize: 12,
-                        ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      price,
+                      style: const TextStyle(
+                        fontSize: 12,
                       ),
-                      Container(
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        // Buat objek CartItem
+                        CartItem newItem = CartItem(
+                          name: name,
+                          price: int.parse(price.replaceAll(RegExp(r'[^0-9]'), '')), // Hapus karakter non-angka
+                          quantity: 1,
+                          image: imageUrl,
+                        );
+
+                        // Navigasi ke CartPage dengan membawa item baru
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CartPage(
+                              initialCartItems: [newItem],
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
                           color: Colors.green,
@@ -271,14 +292,15 @@ BottomNavigationBarItem(
                           size: 16,
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 }

@@ -1,30 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:starbhakmart/pages/add_data_page.dart';
-import 'package:starbhakmart/pages/menu_page.dart';
+import 'dart:io';
 
-void main() {
-  runApp(const OrderPage());
-}
-
-class OrderPage extends StatelessWidget {
-  const OrderPage({super.key});
+class ProductForm extends StatefulWidget {
+  const ProductForm({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ProductForm(),
-    );
-  }
+  _ProductFormState createState() => _ProductFormState();
 }
 
-class ProductForm extends StatelessWidget {
+class _ProductFormState extends State<ProductForm> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   String? selectedCategory;
+  String? selectedImage;
   List<String> categories = ['Makanan', 'Minuman', 'Snack'];
 
-  ProductForm({super.key});
+  // Daftar gambar dari folder assets/images
+  final List<String> availableImages = [
+    'assets/images/Burger.jpeg',
+    'assets/images/teh-botol.jpeg',
+    // Tambahkan path gambar lain yang ada di folder assets/images
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +31,10 @@ class ProductForm extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-           Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => AddDataPage()),
-    );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddDataPage()),
+            );
           },
         ), 
         actions: [
@@ -84,7 +81,9 @@ class ProductForm extends StatelessWidget {
                 );
               }).toList(),
               onChanged: (newValue) {
-                selectedCategory = newValue!;
+                setState(() {
+                  selectedCategory = newValue!;
+                });
               },
               decoration: InputDecoration(
                 labelText: 'Kategori produk',
@@ -94,10 +93,33 @@ class ProductForm extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            TextField(
+            DropdownButtonFormField<String>(
+              value: selectedImage,
+              items: availableImages.map((String imagePath) {
+                return DropdownMenuItem<String>(
+                  value: imagePath,
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        imagePath,
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(imagePath.split('/').last),
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: (newValue) {
+                setState(() {
+                  selectedImage = newValue!;
+                });
+              },
               decoration: InputDecoration(
-                labelText: 'Image',
-                hintText: 'Choose file',
+                labelText: 'Pilih Gambar',
+                hintText: 'Pilih gambar dari assets',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -106,7 +128,11 @@ class ProductForm extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Action on submit
+                // Validasi input
+                if (_validateInput()) {
+                  // Proses submit
+                  _submitForm();
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
@@ -124,5 +150,58 @@ class ProductForm extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  bool _validateInput() {
+    if (nameController.text.isEmpty) {
+      _showErrorSnackBar('Nama produk harus diisi');
+      return false;
+    }
+    if (priceController.text.isEmpty) {
+      _showErrorSnackBar('Harga harus diisi');
+      return false;
+    }
+    if (selectedCategory == null) {
+      _showErrorSnackBar('Kategori harus dipilih');
+      return false;
+    }
+    if (selectedImage == null) {
+      _showErrorSnackBar('Gambar harus dipilih');
+      return false;
+    }
+    return true;
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  void _submitForm() {
+    // Contoh logika submit - Anda bisa sesuaikan dengan kebutuhan Anda
+    print('Nama: ${nameController.text}');
+    print('Harga: ${priceController.text}');
+    print('Kategori: $selectedCategory');
+    print('Gambar: $selectedImage');
+
+    // Tampilkan pesan sukses
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Produk berhasil ditambahkan'),
+        backgroundColor: Colors.green,
+      ),
+    );
+
+    // Reset form
+    nameController.clear();
+    priceController.clear();
+    setState(() {
+      selectedCategory = null;
+      selectedImage = null;
+    });
   }
 }
