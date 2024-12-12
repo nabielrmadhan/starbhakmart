@@ -4,7 +4,7 @@ import 'package:starbhakmart/pages/menu_page.dart';
 import 'order_page.dart';
 
 void main() {
-  runApp(AddDataPage());
+  runApp(const AddDataPage());
 }
 
 class AddDataPage extends StatelessWidget {
@@ -12,7 +12,8 @@ class AddDataPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: ProductListScreen(),
     );
   }
@@ -81,7 +82,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
               onPressed: () {
                 Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const OrderPage()),
+      MaterialPageRoute(builder: (context) => const ProductForm()),
     );
               },
               style: ElevatedButton.styleFrom(
@@ -90,15 +91,15 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   borderRadius: BorderRadius.circular(20.0),
                 ),
               ),
-              child: Text('Add Data +'),
+              child: const Text('Add Data +'),
             ),
             const SizedBox(height: 16),
             Table(
               columnWidths: const {
-                0: const FixedColumnWidth(60),
-                1: const FlexColumnWidth(),
-                2: const FixedColumnWidth(100),
-                3: const FixedColumnWidth(50),
+                0: FixedColumnWidth(60),
+                1: FlexColumnWidth(),
+                2: FixedColumnWidth(100),
+                3: FixedColumnWidth(50),
               },
               border: TableBorder(
                 horizontalInside: BorderSide(color: Colors.grey.shade300),
