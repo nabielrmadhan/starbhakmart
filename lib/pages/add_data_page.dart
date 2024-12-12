@@ -1,53 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:starbhakmart/pages/menu_page.dart';
+import 'package:starbhakmart/pages/order_page.dart';
 
-import 'order_page.dart';
-
-void main() {
-  runApp(const AddDataPage());
-}
-
-class AddDataPage extends StatelessWidget {
+class AddDataPage extends StatefulWidget {
   const AddDataPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ProductListScreen(),
-    );
-  }
+  _AddDataPageState createState() => _AddDataPageState();
 }
 
-class ProductListScreen extends StatefulWidget {
-  const ProductListScreen({super.key});
-
-  @override
-  _ProductListScreenState createState() => _ProductListScreenState();
-}
-
-class _ProductListScreenState extends State<ProductListScreen> {
-  final List<Map<String, dynamic>> _products = [
+class _AddDataPageState extends State<AddDataPage> {
+  // Daftar produk yang dapat diedit
+  List<Map<String, dynamic>> _products = [
     {
       'image': 'assets/images/Burger.jpeg',
       'name': 'Burger King Medium',
       'price': 'Rp.50.000,00',
+      'category': 'Makanan'
     },
     {
       'image': 'assets/images/teh-botol.jpeg',
       'name': 'Teh Botol',
       'price': 'Rp.4.000,00',
-    },
-    {
-      'image': 'assets/images/Burger.jpeg',
-      'name': 'Burger King Small',
-      'price': 'Rp.35.000,00',
+      'category': 'Minuman'
     },
   ];
 
+  // Method untuk menghapus produk
   void _deleteProduct(int index) {
     setState(() {
       _products.removeAt(index);
+    });
+  }
+
+  // Method untuk menambah produk
+  void _addProduct(String name, String price, String image, String category) {
+    setState(() {
+      _products.add({
+        'image': image,
+        'name': name,
+        'price': price,
+        'category': category
+      });
     });
   }
 
@@ -60,10 +54,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-             Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const MenuPage()),
-    );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MenuPage()),
+            );
           },
         ),
         actions: [
@@ -81,9 +75,13 @@ class _ProductListScreenState extends State<ProductListScreen> {
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ProductForm()),
-    );
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProductForm(
+                      onAddProduct: _addProduct,
+                    ),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
@@ -94,50 +92,54 @@ class _ProductListScreenState extends State<ProductListScreen> {
               child: const Text('Add Data +'),
             ),
             const SizedBox(height: 16),
-            Table(
-              columnWidths: const {
-                0: FixedColumnWidth(60),
-                1: FlexColumnWidth(),
-                2: FixedColumnWidth(100),
-                3: FixedColumnWidth(50),
-              },
-              border: TableBorder(
-                horizontalInside: BorderSide(color: Colors.grey.shade300),
-              ),
-              children: [
-                const TableRow(
+            Expanded(
+              child: SingleChildScrollView(
+                child: Table(
+                  columnWidths: const {
+                    0: FixedColumnWidth(60),
+                    1: FlexColumnWidth(),
+                    2: FixedColumnWidth(100),
+                    3: FixedColumnWidth(50),
+                  },
+                  border: TableBorder(
+                    horizontalInside: BorderSide(color: Colors.grey.shade300),
+                  ),
                   children: [
-                    Text('Foto', style: TextStyle(fontWeight: FontWeight.bold)),
-                    Text('Nama Produk', style: TextStyle(fontWeight: FontWeight.bold)),
-                    Text('Harga', style: TextStyle(fontWeight: FontWeight.bold)),
-                    Text('Aksi', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const TableRow(
+                      children: [
+                        Text('Foto', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text('Nama Produk', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text('Harga', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text('Aksi', style: TextStyle(fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                    for (int i = 0; i < _products.length; i++)
+                      TableRow(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image.asset(_products[i]['image'], width: 50, height: 50),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(_products[i]['name']),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(_products[i]['price']),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => _deleteProduct(i),
+                            ),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
-                for (int i = 0; i < _products.length; i++)
-                  TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.network(_products[i]['image'], width: 50, height: 50),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(_products[i]['name']),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(_products[i]['price']),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => _deleteProduct(i),
-                        ),
-                      ),
-                    ],
-                  ),
-              ],
+              ),
             ),
           ],
         ),

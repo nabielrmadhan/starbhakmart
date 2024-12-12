@@ -71,6 +71,7 @@ flutter:
   assets:
     - assets/images/Burger.jpeg
     - assets/images/teh-botol.jpeg
+    - assets/images/empty-cart.png
     - assets/lottie/Animation - 1733930527183.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
